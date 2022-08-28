@@ -1,4 +1,4 @@
-const tumblr = require('tumblr')
+const tumblr = require('tumblr.js');
 const padStart = require('lodash.padstart')
 const unicode = require('./unicode')
 
@@ -9,107 +9,73 @@ const {
   wrapHTMLMaybe,
 } = require('./index')
 
-const tumblrConfig = require('../config/tumblr')
-const user = new tumblr.User(tumblrConfig)
+// Setup a singleton client for this file
+var client = tumblr.createClient({
+  consumer_key: process.env.TUMBLR_CONSUMER_KEY,
+  consumer_secret: process.env.TUMBLR_CONSUMER_SECRET,
+  token: process.env.TUMBLR_TOKEN,
+  token_secret: process.env.TUMBLR_TOKEN_SECRET
+});
 
-exports.getBlogInfo = function getBlogInfo(username = null) {
-  return new Promise(function(resolve, reject) {
-    if (username) {
-      const blog = new tumblr.Blog(`${username}.tumblr.com`, tumblrConfig)
-      return blog.info(function(err, response) {
-        if (err) {
-          return reject(err)
-        } else {
-          return resolve(response.blog)
-        }
-      })
-    } else {
-      return user.info(function(err, response) {
-        if (err) {
-          return reject(err)
-        } else {
-          return resolve(response.user)
-        }
-      })
-    }
+exports.getLoggedInUserInfo = function () {
+  return new Promise((resolve, reject) => {
+    client.userInfo(function (err, data) {
+      if (err) {
+        return reject(err)
+      } else {
+        return resolve(data.user)
+      }
+    });
+  });
+}
+
+exports.getBlogInfo = function (blog) {
+  return new Promise((resolve, reject) => {
+    client.blogInfo(blog, function (err, data) {
+      if (err) {
+        return reject(err)
+      } else {
+        return resolve(data.blog)
+      }
+    });
+  });
+}
+
+exports.getDashboardPosts = function () {
+  return new Promise((resolve, reject) => {
+    client.userDashboard({limit: 60}, function (err, data) {
+      if (err) {
+        return reject(err)
+      } else {
+        return resolve(data.posts)
+      }
+    });
   })
 }
 
-exports.getPosts = function getPosts(src, postCount = 60) {
-  const limit = 20
-  const ic = Math.ceil(postCount / limit)
-  const mod = postCount % limit
-  let offset = 0
-
-  let typeSingular = ''
-  let typePlural = ''
-  let responseKey = ''
-  let blog = null
-
-  switch (src) {
-    case 'dashboard':
-      typeSingular = 'DASHBOARD POST'
-      typePlural = 'DASHBOARD POSTS'
-      responseKey = 'posts'
-      break
-    case 'likes':
-      typeSingular = 'LIKED POST'
-      typePlural = 'LIKED POSTS'
-      responseKey = 'liked_posts'
-      break
-    default:
-      console.log(`Loading posts for ${src}.tumblr.com`)
-      typeSingular = 'POST'
-      typePlural = 'POSTS'
-      blog = new tumblr.Blog(`${src}.tumblr.com`, tumblrConfig)
-  }
-
-  console.log(`POSTS TO LOAD: ${howmany(postCount, 'post')} in ${howmany(ic, 'batch', 'batches')}`)
-
-  // Return array of promises
-  const promises = Array(ic).fill(1).map(function(_, idx) {
-    const batchSize = idx + 1 === ic && mod !== 0 ? mod : limit
-
-    console.log(`* LOADING ${howmany(batchSize, typeSingular, typePlural)}`)
-
-    return new Promise(function(resolve, reject) {
-      const options = {
-        reblog_info: true,
-        // notes_info: true
-        submission_info: true,
-        limit: batchSize,
-        offset,
+exports.getLikedPosts = function () {
+  return new Promise((resolve, reject) => {
+    client.userLikes({limit: 60}, function (err, data) {
+      if (err) {
+        return reject(err)
+      } else {
+        return resolve(data.liked_posts)
       }
-
-      try {
-        if (blog) {
-          blog.posts(options, function(error, response) {
-            if (error) {
-              reject(error)
-              throw error
-            } else {
-              return resolve(response['posts'])
-            }
-          })
-        } else {
-          user[src](options, function(error, response) {
-            if (error) {
-              reject(error)
-              throw error
-            } else {
-              return resolve(response[responseKey])
-            }
-          })
-        }
-      } catch (err) {
-        reject(err)
-      }
-
-      return offset += batchSize
-    })
+    });
   })
+}
 
-  return Promise.all(promises).then(posts => Array.prototype.concat.apply([], posts))
+exports.getPosts = function getPosts(blogName) {
+  return new Promise((resolve, reject) => {
+    client.blogPosts(`${blogName}.tumblr.com`, {limit: 60}, function (err, data) {
+      if (err) {
+        return reject(err)
+      } else {
+        return resolve(data.posts)
+      }
+    });
+  })
+  
 }
 
 exports.buildRSSItems = function buildRSSItems(results) {
@@ -122,8 +88,8 @@ exports.buildRSSItems = function buildRSSItems(results) {
   console.log(`LOADING ${results[what].length} ${what.toUpperCase()}`)
   console.log('====================')
 
-  const feedItems = results[what].map(function(post, idx, arr) {
-    console.log(`- Post ${padStart(idx+1, `${arr.length}`.length, ' ')} of ${arr.length}: ${padStart(post.id, 13, ' ')} (${post.type})`)
+  const feedItems = results[what].map(function (post, idx, arr) {
+    console.log(`- Post ${padStart(idx + 1, `${arr.length}`.length, ' ')} of ${arr.length}: ${padStart(post.id, 13, ' ')} (${post.type})`)
 
     const post_title = []
     const post_content = []
@@ -186,10 +152,10 @@ exports.buildRSSItems = function buildRSSItems(results) {
         if (post.excerpt) { desc.push(`${post.excerpt}`.trim()) }
 
         if (post.photos) {
-          return post.photos.map(function(p, idx, arr) {
+          return post.photos.map(function (p, idx, arr) {
             let titleSuffix = ''
             if (arr.length > 1) {
-              titleSuffix = ` (${idx+1} of ${arr.length})`
+              titleSuffix = ` (${idx + 1} of ${arr.length})`
             }
 
             p.title = post_title.join(` ${unicode.bullet} `) + titleSuffix
@@ -220,15 +186,15 @@ exports.buildRSSItems = function buildRSSItems(results) {
 
             return p
           }).reverse().map(p =>
-            ({
-              title:       p.title,
-              description: p.desc,
-              url:         p.original_size.url,
-              guid:        p.guid,
-              categories:  post.tags,
-              author:      post.blog_name,
-              date:        p.date,
-            }))
+          ({
+            title: p.title,
+            description: p.desc,
+            url: p.original_size.url,
+            guid: p.guid,
+            categories: post.tags,
+            author: post.blog_name,
+            date: p.date,
+          }))
         } else {
           console.log(`!!! ${post.type} without photos`)
           if (post.type === 'link') {
@@ -257,7 +223,7 @@ exports.buildRSSItems = function buildRSSItems(results) {
 
         post.dialogue.forEach(line =>
           post_content.push(
-`<tr>
+            `<tr>
   <th align=left>${line.name}</th>
   <td>${line.phrase}</td>
 </tr>`
@@ -287,7 +253,7 @@ exports.buildRSSItems = function buildRSSItems(results) {
               `https://secure.assets.tumblr.com/images/anonymous_avatar_${avatarSize}.gif`,
               avatarSize,
               avatarSize,
-              {style: 'vertical-align: middle'}
+              { style: 'vertical-align: middle' }
             ),
             post.asking_name,
           ].join('')
@@ -298,7 +264,7 @@ exports.buildRSSItems = function buildRSSItems(results) {
               `http://api.tumblr.com/v2/blog/${post.asking_name}.tumblr.com/avatar/${avatarSize}`,
               avatarSize,
               avatarSize,
-              {style: 'vertical-align: middle'}
+              { style: 'vertical-align: middle' }
             ),
             post.asking_name,
             '</a>',
@@ -317,17 +283,18 @@ exports.buildRSSItems = function buildRSSItems(results) {
 
 
     return {
-      title:       post_title.join(` ${unicode.bullet} `),
+      title: post_title.join(` ${unicode.bullet} `),
       description: [].concat(
         post_content,
         post_footer
       ).join('\n\n'),
-      url:         post.post_url,
-      guid:        post.post_url,
-      categories:  post.tags,
-      author:      post.blog_name,
-      date:        post.date,
-    }})
+      url: post.post_url,
+      guid: post.post_url,
+      categories: post.tags,
+      author: post.blog_name,
+      date: post.date,
+    }
+  })
 
   return Array.prototype.concat.apply([], feedItems)
 }
