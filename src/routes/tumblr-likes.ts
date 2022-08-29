@@ -1,17 +1,18 @@
-const { getLoggedInUserInfo, getDashboardPosts, buildRSSItems } = require('../utils/tumblr')
+import { getLoggedInUserInfo, getLikedPosts, buildRSSItems } from '../utils/tumblr'
 const { buildRSSFeed } = require('../utils/rss')
 
-module.exports = async function tumblrDashboard(request, response) {
+module.exports = async function tumblrLikes(request, response) {
   try {
     const userInfo = await getLoggedInUserInfo();
-    const posts = await getDashboardPosts();
+    const posts = await getLikedPosts();
+
     const data = { userInfo, posts };
     const feed = buildRSSFeed({
       formatter: buildRSSItems,
       request,
-      title: `Tumblr Dashboard for ${data.userInfo.name}`,
-      description: `${data.userInfo.name} follows some interesting people. this is the stuff they post on Tumblr.`,
-      site_url: 'http://www.tumblr.com/dashboard',
+      title: `Tumblr Likes for ${data.userInfo.name}`,
+      description: 'wow, look at all these posts you liked',
+      site_url: 'https://www.tumblr.com/likes',
       data,
     })
 

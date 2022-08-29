@@ -1,4 +1,5 @@
-const tumblr = require('tumblr.js');
+import Tumblr from 'tumblr.js';
+
 const padStart = require('lodash.padstart')
 const unicode = require('./unicode')
 
@@ -9,15 +10,23 @@ const {
   wrapHTMLMaybe,
 } = require('./index')
 
+type TumblrBlogInfo = {
+  name: string,
+}
+
+type TumblrUserInfo = {
+  name: string,
+}
+
 // Setup a singleton client for this file
-var client = tumblr.createClient({
+var client = Tumblr.createClient({
   consumer_key: process.env.TUMBLR_CONSUMER_KEY,
   consumer_secret: process.env.TUMBLR_CONSUMER_SECRET,
   token: process.env.TUMBLR_TOKEN,
   token_secret: process.env.TUMBLR_TOKEN_SECRET
 });
 
-exports.getLoggedInUserInfo = function () {
+export const getLoggedInUserInfo = function (): Promise<TumblrUserInfo> {
   return new Promise((resolve, reject) => {
     client.userInfo(function (err, data) {
       if (err) {
@@ -29,7 +38,8 @@ exports.getLoggedInUserInfo = function () {
   });
 }
 
-exports.getBlogInfo = function (blog) {
+
+export const getBlogInfo = function (blog): Promise<TumblrBlogInfo> {
   return new Promise((resolve, reject) => {
     client.blogInfo(blog, function (err, data) {
       if (err) {
@@ -41,9 +51,9 @@ exports.getBlogInfo = function (blog) {
   });
 }
 
-exports.getDashboardPosts = function () {
+export const getDashboardPosts = function () {
   return new Promise((resolve, reject) => {
-    client.userDashboard({limit: 60}, function (err, data) {
+    client.userDashboard({ limit: 60 }, function (err, data) {
       if (err) {
         return reject(err)
       } else {
@@ -53,9 +63,9 @@ exports.getDashboardPosts = function () {
   })
 }
 
-exports.getLikedPosts = function () {
+export const getLikedPosts = function () {
   return new Promise((resolve, reject) => {
-    client.userLikes({limit: 60}, function (err, data) {
+    client.userLikes({ limit: 60 }, function (err, data) {
       if (err) {
         return reject(err)
       } else {
@@ -65,9 +75,9 @@ exports.getLikedPosts = function () {
   })
 }
 
-exports.getPosts = function getPosts(blogName) {
+export const getPosts = function getPosts(blogName) {
   return new Promise((resolve, reject) => {
-    client.blogPosts(`${blogName}.tumblr.com`, {limit: 60}, function (err, data) {
+    client.blogPosts(`${blogName}.tumblr.com`, { limit: 60 }, function (err, data) {
       if (err) {
         return reject(err)
       } else {
@@ -75,10 +85,10 @@ exports.getPosts = function getPosts(blogName) {
       }
     });
   })
-  
+
 }
 
-exports.buildRSSItems = function buildRSSItems(results) {
+export const buildRSSItems = function buildRSSItems(results) {
   const showLikeStatus = (results.likes == null)
 
   const what = (results.likes && 'likes') || (results.posts && 'posts')

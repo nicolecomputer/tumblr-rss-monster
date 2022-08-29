@@ -1,4 +1,4 @@
-const { getBlogInfo, getPosts, buildRSSItems } = require('../utils/tumblr')
+import { getBlogInfo, getPosts, buildRSSItems } from '../utils/tumblr'
 const { buildRSSFeed } = require('../utils/rss')
 
 module.exports = async function (request, response) {
