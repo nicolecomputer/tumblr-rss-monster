@@ -13,5 +13,7 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+RUN npx tsc
+
 EXPOSE 6969
-CMD [ "node", "index.js" ]
+CMD ["node", "./dist/index.js"]
