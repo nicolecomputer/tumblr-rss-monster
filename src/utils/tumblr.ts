@@ -24,6 +24,7 @@ var client = Tumblr.createClient({
   consumer_secret: process.env.TUMBLR_CONSUMER_SECRET,
   token: process.env.TUMBLR_TOKEN,
   token_secret: process.env.TUMBLR_TOKEN_SECRET
+  // TODO: returnPromises: true,
 });
 
 export const getLoggedInUserInfo = function (): Promise<TumblrUserInfo> {
