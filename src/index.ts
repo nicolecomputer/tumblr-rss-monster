@@ -14,9 +14,6 @@ import tumblrDashboard from "./routes/tumblr-dashboard";
 import tumblrLikes from "./routes/tumblr-likes";
 import tumblrUser from "./routes/tumblr-user"
 
-// Extract to env variable
-const STORAGE_ROOT = "./data/"
-
 const FileStore = FileStoreInitializer(session);
 passport.use(new OAuth1Strategy({
     requestTokenURL: 'https://www.tumblr.com/oauth/request_token',
@@ -76,7 +73,7 @@ app.use(cookieParser());
 app.set('port', 6969)
 app.use(session({
     store: new FileStore({
-        path: `${STORAGE_ROOT}/sessions`
+        path: `${process.env.STORAGE_ROOT}/sessions`
     }),
     secret: 'tumblr-secure-secret',
     resave: false,
