@@ -15,6 +15,8 @@ This project is meant to be deployed as a docker container. It expects the follo
 
 You'll need to get the consumer key and secret by creating a [tumblr application](https://www.tumblr.com/oauth/apps). For the token and secret follow the steps below.
 
+It exepcts the container's port of `6969` to be forwarded to your destination port.
+
 
 ## Getting Auth tokens
 

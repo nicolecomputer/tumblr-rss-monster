@@ -85,7 +85,6 @@ export const getPosts = function getPosts(blogName) {
       }
     });
   })
-
 }
 
 export const buildRSSItems = function buildRSSItems(results) {
@@ -191,8 +190,6 @@ export const buildRSSItems = function buildRSSItems(results) {
 
             // post_date = new Date(post.date)
             // p.date = new Date(post_date.getTime() + idx * 1000)
-
-            console.log(JSON.stringify(p, null, '  '))
 
             return p
           }).reverse().map(p =>

@@ -1,4 +1,6 @@
-import { getLoggedInUserInfo, getDashboardPosts, buildRSSItems } from '../utils/tumblr'
+import { buildRSSItems } from '../utils/tumblr'
+import { getLoggedInUserInfo, getDashboardPosts } from '../utils/tumblr-cached-resource'
+
 const { buildRSSFeed } = require('../utils/rss')
 
 module.exports = async function tumblrDashboard(request, response) {
