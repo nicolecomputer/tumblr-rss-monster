@@ -27,9 +27,9 @@ var client = Tumblr.createClient({
   // TODO: returnPromises: true,
 });
 
-export const getLoggedInUserInfo = function (): Promise<TumblrUserInfo> {
+export const getLoggedInUserInfo = function (tumblr): Promise<TumblrUserInfo> {
   return new Promise((resolve, reject) => {
-    client.userInfo(function (err, data) {
+    tumblr.userInfo(function (err, data) {
       if (err) {
         return reject(err)
       } else {
@@ -52,9 +52,9 @@ export const getBlogInfo = function (blog): Promise<TumblrBlogInfo> {
   });
 }
 
-export const getDashboardPosts = function () {
+export const getDashboardPosts = function (tumblr) {
   return new Promise((resolve, reject) => {
-    client.userDashboard({ limit: 60 }, function (err, data) {
+    tumblr.userDashboard({ limit: 60 }, function (err, data) {
       if (err) {
         return reject(err)
       } else {
@@ -64,9 +64,9 @@ export const getDashboardPosts = function () {
   })
 }
 
-export const getLikedPosts = function () {
+export const getLikedPosts = function (tumblr) {
   return new Promise((resolve, reject) => {
-    client.userLikes({ limit: 60 }, function (err, data) {
+    tumblr.userLikes({ limit: 60 }, function (err, data) {
       if (err) {
         return reject(err)
       } else {

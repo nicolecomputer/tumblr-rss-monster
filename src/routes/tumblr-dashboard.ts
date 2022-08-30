@@ -1,12 +1,32 @@
+import Tumblr from "tumblr.js"
+
 import { buildRSSItems } from '../utils/tumblr'
 import { getLoggedInUserInfo, getDashboardPosts } from '../utils/tumblr-cached-resource'
+import userStore from '../data_storage/user';
 
 const { buildRSSFeed } = require('../utils/rss')
 
 export default async function tumblrDashboard(request, response) {
   try {
-    const userInfo = await getLoggedInUserInfo();
-    const posts = await getDashboardPosts();
+    const userId = request.params.userid;
+    const user: any = await userStore.findById(userId);
+
+    if (!user) {
+      response.status(404).send("Couldn't find user");
+      return
+    }
+
+    var client = Tumblr.createClient({
+      consumer_key: process.env.TUMBLR_CONSUMER_KEY,
+      consumer_secret: process.env.TUMBLR_CONSUMER_SECRET,
+      token: user.token,
+      token_secret: user.tokenSecret
+      // TODO: returnPromises: true,
+    });
+
+    const userInfo = await getLoggedInUserInfo(client);
+    const posts = await getDashboardPosts(client);
+
     const data = { userInfo, posts };
     const feed = buildRSSFeed({
       formatter: buildRSSItems,

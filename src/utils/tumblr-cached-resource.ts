@@ -13,9 +13,9 @@ async function fromFromCacheOrDataSource(cache, key, source) {
     return data
 }
 
-export const getLoggedInUserInfo = async function () {
+export const getLoggedInUserInfo = async function (client) {
     return fromFromCacheOrDataSource(userInfoCache, "user/self", async () => {
-        return API.getLoggedInUserInfo()
+        return API.getLoggedInUserInfo(client)
     });
 }
 
@@ -25,15 +25,15 @@ export const getBlogInfo = function (blog: string) {
     });
 }
 
-export const getDashboardPosts = function () {
+export const getDashboardPosts = function (client) {
     return fromFromCacheOrDataSource(postCache, `posts/dashboard`, async () => {
-        return API.getDashboardPosts()
+        return API.getDashboardPosts(client)
     })
 }
 
-export const getLikedPosts = function () {
+export const getLikedPosts = function (client) {
     return fromFromCacheOrDataSource(postCache, `posts/liked`, async () => {
-        return API.getLikedPosts()
+        return API.getLikedPosts(client)
     })
 }
 
