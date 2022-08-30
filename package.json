@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=development npx nodemon src/index.ts"
+    "start": "touch .env; mkdir -p data/; NODE_ENV=development npx nodemon src/index.ts"
   },
   "author": "Mike Meyer <npm@meyer.fm> (http://meyermade.com)",
   "license": "ISC",
