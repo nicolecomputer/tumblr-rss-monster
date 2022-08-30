@@ -3,7 +3,7 @@ import { getLoggedInUserInfo, getDashboardPosts } from '../utils/tumblr-cached-r
 
 const { buildRSSFeed } = require('../utils/rss')
 
-module.exports = async function tumblrDashboard(request, response) {
+export default async function tumblrDashboard(request, response) {
   try {
     const userInfo = await getLoggedInUserInfo();
     const posts = await getDashboardPosts();

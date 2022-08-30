@@ -3,7 +3,7 @@ import { buildRSSFeed } from '../utils/rss'
 import { getBlogInfo, getPosts } from '../utils/tumblr-cached-resource'
 
 
-module.exports = async function (request, response) {
+export default async function (request, response) {
   try {
     const blogId = request.params.userid;
     console.log(`Loading posts for ${blogId}.tumblr.com`)
