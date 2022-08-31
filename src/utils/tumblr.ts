@@ -95,11 +95,8 @@ export const buildRSSItems = function buildRSSItems(results) {
 
   if (!what) { throw 'buildRSSItem only supports liked_posts and posts' }
 
-  console.log(`LOADING ${results[what].length} ${what.toUpperCase()}`)
-  console.log('====================')
 
   const feedItems = results[what].map(function (post, idx, arr) {
-    console.log(`- Post ${padStart(idx + 1, `${arr.length}`.length, ' ')} of ${arr.length}: ${padStart(post.id, 13, ' ')} (${post.type})`)
 
     const post_title = []
     const post_content = []
@@ -121,7 +118,6 @@ export const buildRSSItems = function buildRSSItems(results) {
         reblog_src = `${post.reblogged_from_name} … ${post.reblogged_root_name}`
       }
       // else
-      //   console.log 'post author is the same as reblogger'
 
       post_title.push(`${post.blog_name} ${unicode.reblogIcon} ${reblog_src}`)
     } else {
@@ -204,7 +200,6 @@ export const buildRSSItems = function buildRSSItems(results) {
             date: p.date,
           }))
         } else {
-          console.log(`!!! ${post.type} without photos`)
           if (post.type === 'link') {
             post_content.push(desc)
 
@@ -285,7 +280,6 @@ export const buildRSSItems = function buildRSSItems(results) {
       }
 
       default:
-        console.log(`Unsupported post type: ${post.type}`)
         post_content.push(`${ucfirst(post.type)} posts not supported (yet!)`)
     }
 

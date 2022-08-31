@@ -10,7 +10,6 @@ export const buildRSSFeed = function buildRSSFeed(o) {
   })
 
   o.formatter(o.data).forEach(function (feedItem, idx, arr) {
-    console.log(`- Feed item ${padStart(idx + 1, `${arr.length}`.length, ' ')} of ${arr.length}: ${feedItem.title} (${feedItem.date})`)
     return feed.item(feedItem)
   })
 
