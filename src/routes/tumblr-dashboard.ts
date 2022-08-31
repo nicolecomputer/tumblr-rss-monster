@@ -3,7 +3,7 @@ import Tumblr from "tumblr.js"
 import { buildRSSItems } from '../utils/tumblr'
 import { getLoggedInUserInfo, getDashboardPosts } from '../utils/tumblr-cached-resource'
 import userStore from '../data_storage/user';
-
+import config from "../config/config";
 const { buildRSSFeed } = require('../utils/rss')
 
 export default async function tumblrDashboard(request, response) {
@@ -17,8 +17,8 @@ export default async function tumblrDashboard(request, response) {
     }
 
     var client = Tumblr.createClient({
-      consumer_key: process.env.TUMBLR_CONSUMER_KEY,
-      consumer_secret: process.env.TUMBLR_CONSUMER_SECRET,
+      consumer_key: config.consumer_key,
+      consumer_secret: config.consumer_secret,
       token: user.token,
       token_secret: user.tokenSecret
       // TODO: returnPromises: true,

@@ -1,10 +1,11 @@
 import sqlite3 from 'sqlite3'
+import config from '../config/config';
 
 export class Datastore {
     db: any;
 
     constructor(dbFilePath) {
-        this.db = new sqlite3.Database(`${process.env.STORAGE_ROOT}/db.sqlite`, (err) => {
+        this.db = new sqlite3.Database(dbFilePath, (err) => {
             if (err) {
                 console.log('Could not connect to database', err)
             } else {
@@ -56,6 +57,6 @@ export class Datastore {
     }
 }
 
-const path = `${process.env.STORAGE_ROOT}/db.sqlite`;
+const path = `${config.storage_root}/db.sqlite`;
 const mainStore = new Datastore(path)
 export default mainStore;
