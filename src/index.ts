@@ -117,7 +117,7 @@ async function main() {
     app.set('port', 6969)
     app.use(session({
         store: new FileStore({
-            path: `${process.env.STORAGE_ROOT}/sessions`
+            path: `${config.storage_root}/sessions`
         }),
         secret: 'tumblr-secure-secret',
         resave: false,
