@@ -15,7 +15,7 @@ import cookieParser from 'cookie-parser'
 import tumblr from "tumblr.js"
 
 // Local dependencies
-import config from "./config/tumblr"
+import config from "./config/config"
 import tumblrDashboard from "./routes/tumblr-dashboard";
 import tumblrLikes from "./routes/tumblr-likes";
 import tumblrUser from "./routes/tumblr-user"
@@ -23,7 +23,6 @@ import userStore from "./data_storage/user"
 
 function initialize() {
     const requiredVars = {
-        "STORAGE_ROOT": "Path for storing cookies, database, and cache",
         "TUMBLR_CONSUMER_KEY": "Tumblr API Key (register at https://www.tumblr.com/oauth/apps)",
         "TUMBLR_CONSUMER_SECRET": "Tumblr API Key (register at https://www.tumblr.com/oauth/apps)"
     }
@@ -31,8 +30,12 @@ function initialize() {
     Object.keys(requiredVars).forEach((requiredVar: string) => {
         if (!process.env[requiredVar]) {
             console.error(`Missing environment variable: ${requiredVar}: ${requiredVars[requiredVar]}`)
-            console.error(`\tIf this is development, make sure you set ${requiredVar} in the .env file`)
-            console.error(`\tIf this is production, this should be passed as a variable to the docker container`)
+            if (process.env.NODE_ENV === "development") {
+                console.error(`\nMake sure you set ${requiredVar} in the .env file OR`)
+                console.error(`\nMake sure you set ${requiredVar} in the Codespace settings`)
+            } else {
+                console.error(`\tThis should be passed as a variable to the docker container`)
+            }
             process.exit(1)
         }
     })
