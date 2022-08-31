@@ -103,6 +103,15 @@ export class TumblrAPIClient {
         console.log(response.posts[0])
         return response.posts
     }
+
+    @Cached({ key: "posts/liked", cache: postCache })
+    @CallCounter()
+    async likedPosts(client): Promise<Array<Post>> {
+        const response = await client.userLikes({ limit: 60 })
+        console.log(response.liked_posts[0])
+        return response.liked_posts
+    }
+
 }
 
 const defaultClient = new TumblrAPIClient();

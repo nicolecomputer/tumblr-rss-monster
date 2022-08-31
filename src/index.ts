@@ -153,10 +153,21 @@ async function main() {
         });
     });
 
+    const userRouteErrorHandler = (error, req, res, next) => {
+        console.log(error)
+        if (error.name === "UserNotFoundError") {
+            res.status(404).send(error.message);
+            return
+        }
+
+        res.status(500).send("Something went wrong");
+        return
+    }
+
     // RSS Routes
-    app.get('/user/:userid/rss/dashboard.rss', tumblrDashboard)
-    app.get('/user/:userid/rss/likes.rss', tumblrLikes)
-    app.get('/tumblr-user/:userid/blog/:blogid/feed.rss', tumblrUser)
+    app.get('/user/:userid/rss/dashboard.rss', tumblrDashboard, userRouteErrorHandler);
+    app.get('/user/:userid/rss/likes.rss', tumblrLikes, userRouteErrorHandler)
+    app.get('/tumblr-user/:userid/blog/:blogid/feed.rss', tumblrUser, userRouteErrorHandler)
 
     // Auth
     app.get('/auth/tumblr',
