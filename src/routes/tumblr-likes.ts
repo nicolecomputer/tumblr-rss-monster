@@ -19,7 +19,6 @@ export default async function tumblrLikes(request, response) {
       consumer_secret: process.env.TUMBLR_CONSUMER_SECRET,
       token: user.token,
       token_secret: user.tokenSecret
-      // TODO: returnPromises: true,
     });
 
     const userInfo = await getLoggedInUserInfo(client);
