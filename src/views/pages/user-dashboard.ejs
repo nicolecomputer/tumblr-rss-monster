@@ -1,6 +1,7 @@
-<h1>Hello <%= user.name %>
+<h1>
+    <%= user.name %>
 </h1>
-<p>You can get your feeds here</p>
+<p>Feeds for user:</p>
 <ul>
     <li><a href="/user/<%= user.id %>/rss/dashboard.rss">
             <%= user.name %>'s dashboard
@@ -9,4 +10,4 @@
             <%= user.name %>'s likes
         </a></li>
 </ul>
-<p>You can also find a feed for any user at <code>/user/<%= user.id %>/rss/TUMBLR_NAME/feed.rss</code></p>
+<p>You can also find a feed for any user at <code>/user/<%= user.id %>/blog/TUMBLR_NAME/feed.rss</code></p>
