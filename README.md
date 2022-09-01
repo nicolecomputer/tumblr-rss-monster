@@ -1,9 +1,8 @@
-# Tumblr Dashboard RSS
+# Tumblr RSS Monster
 
-This project consumes tumblr posts and spits out nicely formatted RSS feeds.
+Hey! So, you want to read your tumblr feeds in your RSS reader, huh? You want to be able to grab your dashboard or share your liked posts with someone else or maybe follow a couple of blogs? Well this is the project for you.
 
-It uses Tumblr's authentication methods which means you should be able to see prviate and NSFW blogs in your RSS reader.
-
+Tumblr RSS monster is a bridge that connects to Tumblr via their API and generates you RSS feed goodness. Because it uses the API and is authenticated you'll be able to get feeds for private or NSFW blogs that normally require you to be logged in.
 ## Deploying
 
 This project is meant to be deployed as a docker container.
@@ -24,6 +23,10 @@ You'll want to mount a folder that will persist between deploys.
 
 This project exepcts the container's port of `6969` to be forwarded to your destination port.
 
+## Usage
+
+After installing and starting navigate to http://127.0.0.1:6969 You'll be able to login as a tumblr user and see the rss feeds that have been generated.
+
 ## Development
 
 Tumblr-Dashboard-RSS is written in Typescript. To get started you need to:
@@ -35,6 +38,8 @@ Tumblr-Dashboard-RSS is written in Typescript. To get started you need to:
 - Start the project (`yarn start`)
 
 This will start a process that will watch the source code (located in `src/`) for changes, compile those changes from typescript to javascript, output the javascript to `dist/` and run the program.
+
+There's a `.devcontainer` setup in this project to make things easier to setup. You can get started quickly with either [VSCode's remote container support](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) or [Github's codespace](https://github.com/features/codespaces).
 
 ## Credits
 
