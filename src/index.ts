@@ -58,9 +58,6 @@ async function main() {
         callbackURL: "http://127.0.0.1:6969/auth/tumblr/callback",
         signatureMethod: "HMAC-SHA1"
     }, async (token, tokenSecret, profile, cb) => {
-        console.log("Profile", profile)
-        console.log("Token", token)
-
         const tumblrClient = tumblr.createClient({
             credentials: {
                 consumer_key: config.consumer_key,
@@ -90,7 +87,6 @@ async function main() {
                 });
             } else {
                 // TODO: Update the user record with the new keys
-                console.log("USER ALEADY EXISTS")
             }
 
             return cb(null, {});

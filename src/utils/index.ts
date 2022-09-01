@@ -49,11 +49,6 @@ export function wrapHTMLMaybe(text, tag) {
   const openingTag = text.match(rStart)
   const closingTag = text.match(rEnd)
 
-  console.log('Text:', text)
-  console.log('- tag:', tag)
-  console.log('- openingTag:', (openingTag && openingTag[1]) || '(none)')
-  console.log('- closingTag:', (closingTag && closingTag[1]) || '(none)')
-
   // if rTag.test(text)
   if (openingTag && openingTag[1] === tag) {
     return text

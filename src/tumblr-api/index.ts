@@ -20,7 +20,6 @@ export class TumblrAPIClient {
     @CallCounter()
     async blogInfo(blogId, client): Promise<Blog> {
         const response = await client.blogInfo(blogId);
-        console.log(response.blog)
         return response.blog
     }
 
@@ -35,7 +34,6 @@ export class TumblrAPIClient {
     @CallCounter()
     async dashboardPosts(client): Promise<Array<Post>> {
         const response = await client.userDashboard({ limit: 60 })
-        console.log(response.posts[0])
         return response.posts
     }
 
@@ -43,7 +41,6 @@ export class TumblrAPIClient {
     @CallCounter()
     async likedPosts(client): Promise<Array<Post>> {
         const response = await client.userLikes({ limit: 60 })
-        console.log(response.liked_posts[0])
         return response.liked_posts
     }
 }
