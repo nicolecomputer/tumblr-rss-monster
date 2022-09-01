@@ -1,8 +1,7 @@
-import API from "../tumblr-api/base";
+import API from "../tumblr-api";
 import { configuredClientFromRequest } from "../utils/user"
 
-import { buildRSSFeed } from '../utils/rss';
-import { buildRSSItems } from '../utils/tumblr'
+import { buildRSSFeed, buildRSSItems } from '../utils/rss';
 
 export default async function tumblrDashboard(request, response, next) {
   try {

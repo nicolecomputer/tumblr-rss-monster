@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   answerIcon: '\u2192',
   reblogIcon: '\u21C4',
   bullet: '\u2022',

@@ -1,13 +1,13 @@
-exports.ucfirst = function ucFirst(potentialString) {
+export function ucfirst(potentialString) {
   const s = `${potentialString}`
   return `${s.charAt(0).toUpperCase()}${s.substr(1)}`
 }
 
-exports.howmany = function howMany(count, singular, plural) {
+export function howmany(count, singular, plural) {
   return `${count} ${count === 1 ? singular : (plural || `${singular}s`)}`
 }
 
-exports.img = function img(src, width, height, opts) {
+export function img(src: string, width: number, height: number, opts = null) {
   if (!opts) { opts = {} }
   opts.src = src
   opts.width = width
@@ -21,22 +21,22 @@ exports.img = function img(src, width, height, opts) {
   )
 }
 
-exports.getTimeDiffString = function getTimeDiffString(t, p) {
+export function getTimeDiffString(t, p) {
   let timeInt = Math.abs(t)
   const pfx = p ? ` ${p}` : ''
 
   if (t <= 1000) { return '' }
 
   if ((timeInt /= 1000) < 60) return `${Math.round(timeInt * 10) / 10} seconds${pfx}`
-  if ((timeInt /= 60)   < 60) return `${Math.round(timeInt * 10) / 10} minutes${pfx}`
-  if ((timeInt /= 60)   < 24) return `${Math.round(timeInt * 10) / 10} hours${pfx}`
-  if ((timeInt /= 24)   <  7) return `${Math.round(timeInt * 10) / 10} days${pfx}`
+  if ((timeInt /= 60) < 60) return `${Math.round(timeInt * 10) / 10} minutes${pfx}`
+  if ((timeInt /= 60) < 24) return `${Math.round(timeInt * 10) / 10} hours${pfx}`
+  if ((timeInt /= 24) < 7) return `${Math.round(timeInt * 10) / 10} days${pfx}`
 
   return `${Math.round((t / 7) * 10) / 10} weeks${pfx}`
 }
 
 // look at me, parsing HTML with regular expressions
-exports.wrapHTMLMaybe = function wrapHTMLMaybe(text, tag) {
+export function wrapHTMLMaybe(text, tag) {
   text = `${text}`.trim()
 
   // Text starts/ends with HTML tags

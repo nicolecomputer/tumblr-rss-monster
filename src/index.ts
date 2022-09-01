@@ -167,7 +167,7 @@ async function main() {
     // RSS Routes
     app.get('/user/:userid/rss/dashboard.rss', tumblrDashboard, userRouteErrorHandler);
     app.get('/user/:userid/rss/likes.rss', tumblrLikes, userRouteErrorHandler)
-    app.get('/tumblr-user/:userid/blog/:blogid/feed.rss', tumblrUser, userRouteErrorHandler)
+    app.get('/user/:userid/blog/:blogId/feed.rss', tumblrUser, userRouteErrorHandler)
 
     // Auth
     app.get('/auth/tumblr',

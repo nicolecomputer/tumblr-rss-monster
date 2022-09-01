@@ -1,11 +1,9 @@
-import API from "../tumblr-api/base";
+import API from "../tumblr-api";
 import { configuredClientFromRequest } from "../utils/user"
 
-import { buildRSSItems } from '../utils/tumblr'
-import { buildRSSFeed } from '../utils/rss'
+import { buildRSSFeed, buildRSSItems } from '../utils/rss'
 
 export default async function tumblrLikes(request, response, next) {
-
   try {
     const configuredClient = await configuredClientFromRequest(request)
     const userInfo = await API.userInfo(configuredClient)
