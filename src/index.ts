@@ -1,33 +1,200 @@
-const express = require('express')
+// Dotenv is special, it needs to be initialize as SOON AS POSSIBLE
+import * as dotenv from 'dotenv'
+dotenv.config()
 
-const server = express()
+// System Library
+import Crypto from "crypto";
 
-require('dotenv').config()
+// Third party libraries
+import express from "express"
+import session from "express-session"
+import OAuth1Strategy from "passport-oauth1"
+import passport from "passport"
+import FileStoreInitializer from 'session-file-store'
+import cookieParser from 'cookie-parser'
+import tumblr from "tumblr.js"
 
-const routes = {
-    'tumblr-dashboard.rss': 'tumblr-dashboard',
-    'tumblr-likes.rss': 'tumblr-likes',
-    'tumblr-user/:userid/feed.rss': 'tumblr-user',
+// Local dependencies
+import config from "./config/config"
+import tumblrDashboard from "./routes/tumblr-dashboard";
+import tumblrLikes from "./routes/tumblr-likes";
+import tumblrUser from "./routes/tumblr-user"
+import userStore from "./data_storage/user"
+
+function initialize() {
+    const requiredVars = {
+        "TUMBLR_CONSUMER_KEY": "Tumblr API Key (register at https://www.tumblr.com/oauth/apps)",
+        "TUMBLR_CONSUMER_SECRET": "Tumblr API Key (register at https://www.tumblr.com/oauth/apps)"
+    }
+
+    Object.keys(requiredVars).forEach((requiredVar: string) => {
+        if (!process.env[requiredVar]) {
+            console.error(`Missing environment variable: ${requiredVar}: ${requiredVars[requiredVar]}`)
+            if (process.env.NODE_ENV === "development") {
+                console.error(`\nMake sure you set ${requiredVar} in the .env file OR`)
+                console.error(`\nMake sure you set ${requiredVar} in the Codespace settings`)
+            } else {
+                console.error(`\tThis should be passed as a variable to the docker container`)
+            }
+            process.exit(1)
+        }
+    })
 }
 
-server.set('port', 6969)
+async function main() {
+    // Sanity check the environment
+    initialize()
 
-server.use('/', function (request, response, next) {
-    console.log(`${new Date} - ${request.originalUrl}`)
-    next()
-})
+    // Setup database
+    await userStore.createTable();
 
-const localURL = `http://localhost:${server.get('port')}/`
+    const FileStore = FileStoreInitializer(session);
+    passport.use(new OAuth1Strategy({
+        requestTokenURL: 'https://www.tumblr.com/oauth/request_token',
+        accessTokenURL: 'https://www.tumblr.com/oauth/access_token',
+        userAuthorizationURL: 'https://www.tumblr.com/oauth/authorize',
+        consumerKey: config.consumer_key,
+        consumerSecret: config.consumer_secret,
+        callbackURL: "http://127.0.0.1:6969/auth/tumblr/callback",
+        signatureMethod: "HMAC-SHA1"
+    }, async (token, tokenSecret, profile, cb) => {
+        console.log("Profile", profile)
+        console.log("Token", token)
 
-console.log('============')
-console.log('AVAILABLE PATHS')
+        const tumblrClient = tumblr.createClient({
+            credentials: {
+                consumer_key: config.consumer_key,
+                consumer_secret: config.consumer_secret,
+                token: token,
+                token_secret: tokenSecret,
+            },
+            returnPromises: true
+        });
 
-for (const route in routes) {
-    const handler = routes[route]
-    console.log(`${localURL}${route}`)
-    server.get(`/${route}`, require(`./routes/${handler}`))
+        try {
+            // @ts-ignore: Promises are promised
+            const userInfo = await tumblrClient.userInfo();
+            // @ts-ignore: And this will work
+            const username = userInfo.user.name
+
+            const user = await userStore.findByUsername(username)
+            if (!user) {
+                const userId = Crypto.randomUUID();
+                await userStore.insert(
+                    userId,
+                    username,
+                    token,
+                    tokenSecret)
+                return cb(null, {
+                    id: userId
+                });
+            } else {
+                // TODO: Update the user record with the new keys
+                console.log("USER ALEADY EXISTS")
+            }
+
+            return cb(null, {});
+        } catch (error) {
+            console.log("ERROR", error)
+            return cb(error, null)
+        }
+    }
+    ));
+
+    passport.serializeUser(function (user, done) {
+        done(null, user);
+    });
+
+    passport.deserializeUser(function (user, done) {
+        done(null, user);
+    });
+
+    const app = express()
+    app.set('view engine', 'ejs');
+    app.set('views', __dirname + '/views');
+    app.set('trust proxy', 1)
+    app.use(cookieParser());
+    app.set('port', 6969)
+    app.use(session({
+        store: new FileStore({
+            path: `${config.storage_root}/sessions`
+        }),
+        secret: 'tumblr-secure-secret',
+        resave: false,
+        saveUninitialized: false
+    }))
+
+    app.use(passport.initialize())
+    app.use(passport.session())
+
+
+    app.get('/', async (req, res) => {
+        const users = await userStore.all()
+        res.render('pages/index', {
+            users: users
+        });
+    });
+
+
+    // Per-user routes
+    app.get('/user/:userid/', async (req, res) => {
+        const userId = req.params.userid;
+        const user: any = await userStore.findById(userId);
+
+        if (!user) {
+            res.status(404).send("Couldn't find user");
+            return
+        }
+        res.render('pages/user-dashboard', {
+            user: {
+                id: user.id,
+                name: user.username
+            }
+        });
+    });
+
+    const userRouteErrorHandler = (error, req, res, next) => {
+        console.log(error)
+        if (error.name === "UserNotFoundError") {
+            res.status(404).send(error.message);
+            return
+        }
+
+        res.status(500).send("Something went wrong");
+        return
+    }
+
+    // RSS Routes
+    app.get('/user/:userid/rss/dashboard.rss', tumblrDashboard, userRouteErrorHandler);
+    app.get('/user/:userid/rss/likes.rss', tumblrLikes, userRouteErrorHandler)
+    app.get('/user/:userid/blog/:blogId/feed.rss', tumblrUser, userRouteErrorHandler)
+
+    // Auth
+    app.get('/auth/tumblr',
+        passport.authenticate('oauth'));
+
+    app.get('/auth/tumblr/callback',
+        passport.authenticate('oauth', { failureRedirect: '/login' }),
+        function (req, res) {
+            // Successful authentication, redirect home.
+            res.redirect('/');
+        });
+
+
+
+    const localURL = `http://127.0.0.1:${app.get('port')}`
+
+    console.log('============')
+    console.log('AVAILABLE PATHS')
+    app._router.stack.forEach(function (r) {
+        if (r.route && r.route.path) {
+            const route = r.route.path;
+            console.log(`${localURL}${route}`)
+        }
+    });
+    console.log('============')
+
+    app.listen(6969);
 }
 
-console.log('============')
-
-server.listen(6969)
+main();

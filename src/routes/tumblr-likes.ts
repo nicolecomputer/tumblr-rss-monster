@@ -1,27 +1,26 @@
-import { buildRSSItems } from '../utils/tumblr'
-import { buildRSSFeed } from '../utils/rss'
-import { getLoggedInUserInfo, getLikedPosts } from '../utils/tumblr-cached-resource'
+import API from "../tumblr-api";
+import { configuredClientFromRequest } from "../utils/user"
 
-module.exports = async function tumblrLikes(request, response) {
+import { buildRSSFeed, buildRSSItems } from '../utils/rss'
+
+export default async function tumblrLikes(request, response, next) {
   try {
-    // TODO: Cache this request, it is stable and only needs to be called once per day
-    const userInfo = await getLoggedInUserInfo();
-    const posts = await getLikedPosts();
+    const configuredClient = await configuredClientFromRequest(request)
+    const userInfo = await API.userInfo(configuredClient)
+    const posts = await API.likedPosts(configuredClient);
 
-    const data = { userInfo, posts };
     const feed = buildRSSFeed({
       formatter: buildRSSItems,
       request,
-      title: `Tumblr Likes for ${data.userInfo.name}`,
-      description: 'wow, look at all these posts you liked',
-      site_url: 'https://www.tumblr.com/likes',
-      data,
+      title: `Tumblr Dashboard for ${userInfo.name}`,
+      description: `${userInfo.name}'s Tumblr dashboard`,
+      site_url: 'http://www.tumblr.com/dashboard',
+      data: { userInfo, posts },
     })
 
     response.set('Content-Type', 'text/xml; charset=utf-8')
-    return response.send(feed.xml())
+    response.send(feed.xml())
   } catch (error) {
-    console.error(error)
-    response.status(500).send("Something went wrong");
+    next(error)
   }
 }

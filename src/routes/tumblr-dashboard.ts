@@ -1,26 +1,26 @@
-import { buildRSSItems } from '../utils/tumblr'
-import { getLoggedInUserInfo, getDashboardPosts } from '../utils/tumblr-cached-resource'
+import API from "../tumblr-api";
+import { configuredClientFromRequest } from "../utils/user"
 
-const { buildRSSFeed } = require('../utils/rss')
+import { buildRSSFeed, buildRSSItems } from '../utils/rss';
 
-module.exports = async function tumblrDashboard(request, response) {
+export default async function tumblrDashboard(request, response, next) {
   try {
-    const userInfo = await getLoggedInUserInfo();
-    const posts = await getDashboardPosts();
-    const data = { userInfo, posts };
+    const configuredClient = await configuredClientFromRequest(request)
+    const userInfo = await API.userInfo(configuredClient)
+    const posts = await API.dashboardPosts(configuredClient);
+
     const feed = buildRSSFeed({
       formatter: buildRSSItems,
       request,
-      title: `Tumblr Dashboard for ${data.userInfo.name}`,
-      description: `${data.userInfo.name} follows some interesting people. this is the stuff they post on Tumblr.`,
+      title: `Tumblr Dashboard for ${userInfo.name}`,
+      description: `${userInfo.name}'s Tumblr dashboard`,
       site_url: 'http://www.tumblr.com/dashboard',
-      data,
+      data: { userInfo, posts },
     })
 
     response.set('Content-Type', 'text/xml; charset=utf-8')
-    return response.send(feed.xml())
+    response.send(feed.xml())
   } catch (error) {
-    console.error(error)
-    response.status(500).send("Something went wrong");
+    next(error)
   }
 }

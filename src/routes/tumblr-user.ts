@@ -1,15 +1,16 @@
-import { buildRSSItems } from '../utils/tumblr'
-import { buildRSSFeed } from '../utils/rss'
-import { getBlogInfo, getPosts } from '../utils/tumblr-cached-resource'
+import API from "../tumblr-api";
+import { configuredClientFromRequest } from "../utils/user"
+
+import { buildRSSFeed, buildRSSItems } from '../utils/rss'
 
 
-module.exports = async function (request, response) {
+export default async function (request, response, next) {
   try {
-    const blogId = request.params.userid;
-    console.log(`Loading posts for ${blogId}.tumblr.com`)
+    const blogId = request.params.blogId;
 
-    const blogInfo = await getBlogInfo(blogId);
-    const posts = await getPosts(blogId);
+    const configuredClient = await configuredClientFromRequest(request)
+    const blogInfo = await API.blogInfo(blogId, configuredClient);
+    const posts = await API.postsForBlog(blogId, configuredClient);
 
     const data = { blogInfo, posts };
     const feed = buildRSSFeed({
@@ -22,9 +23,8 @@ module.exports = async function (request, response) {
     })
 
     response.set('Content-Type', 'text/xml; charset=utf-8')
-    return response.send(feed.xml())
+    response.send(feed.xml())
   } catch (error) {
-    console.error(error)
-    response.status(500).send("Something went wrong");
+    next(error)
   }
 }
