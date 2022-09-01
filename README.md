@@ -11,8 +11,6 @@ Tumblr RSS monster is a bridge that connects to Tumblr via their API and generat
 
 This project is meant to be deployed as a docker container.
 
-You can pull the image from:
-
 ```bash
 > docker pull ghcr.io/nicolecomputer/tumblr-rss-monster:main
 ```
