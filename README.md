@@ -47,4 +47,6 @@ There's a `.devcontainer` setup in this project to make things easier to setup. 
 
 ## Credits
 
-This was originally based on a project started [Meyer](https://github.com/meyer) and then modified by [NicoleComputer](https://github.com/meyer).
+Tumblr RSS Monster started life as [tumblr-dashboard-rss](https://github.com/meyer/tumblr-dashboard-rss) by [Meyer](https://github.com/meyer) and then morphed into this monster by [NicoleComputer](https://github.com/meyer).
+
+`Be nice.`
