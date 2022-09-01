@@ -1,5 +1,9 @@
 # Tumblr RSS Monster
 
+<p align="center">
+  <img width="600" height="200" src="logo.png">
+</p>
+
 Hey! So, you want to read your tumblr feeds in your RSS reader, huh? You want to be able to grab your dashboard or share your liked posts with someone else or maybe follow a couple of blogs? Well this is the project for you.
 
 Tumblr RSS monster is a bridge that connects to Tumblr via their API and generates you RSS feed goodness. Because it uses the API and is authenticated you'll be able to get feeds for private or NSFW blogs that normally require you to be logged in.
