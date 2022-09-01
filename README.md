@@ -1,7 +1,7 @@
 # Tumblr RSS Monster
 
 <p align="center">
-  <img width="600" height="200" src="logo.png">
+  <img width="300" height="300" src="logo.png">
 </p>
 
 Hey! So, you want to read your tumblr feeds in your RSS reader, huh? You want to be able to grab your dashboard or share your liked posts with someone else or maybe follow a couple of blogs? Well this is the project for you.
