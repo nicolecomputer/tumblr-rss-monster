@@ -41,6 +41,10 @@ export class UserStore {
             `SELECT * FROM users WHERE username = ?`,
             [username])
     }
+
+    anyUser() {
+        return this.db.get("SELECT * FROM users ORDER BY RANDOM() LIMIT 1")
+    }
 }
 
 const store = new UserStore(db)

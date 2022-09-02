@@ -1,14 +1,17 @@
 import API from "../tumblr-api";
-import { configuredClientFromRequest } from "../utils/user"
+import { clientForUser } from "../utils/user"
 
 import { buildRSSFeed, buildRSSItems } from '../utils/rss'
+import userStore from "../data_storage/user";
 
 
 export default async function (request, response, next) {
   try {
     const blogId = request.params.blogId;
 
-    const configuredClient = await configuredClientFromRequest(request)
+    const user = await userStore.anyUser()
+    const configuredClient = await clientForUser(user);
+
     const blogInfo = await API.blogInfo(blogId, configuredClient);
     const posts = await API.postsForBlog(blogId, configuredClient);
 
@@ -17,7 +20,7 @@ export default async function (request, response, next) {
       formatter: buildRSSItems,
       request,
       title: `${data.blogInfo.name} posts`,
-      description: 'wow, look at all these posts',
+      description: `Posts from ${data.blogInfo.name}`,
       site_url: `https://${blogId}.tumblr.com`,
       data,
     })
