@@ -14,8 +14,6 @@ RUN npm install
 COPY . .
 
 RUN npx tsc
-cp -r src/public/ dist/
-cp -r src/views/ dist/
 
 EXPOSE 6969
 CMD ["node", "./dist/index.js"]
