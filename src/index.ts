@@ -13,9 +13,10 @@ import passport from "passport"
 import FileStoreInitializer from 'session-file-store'
 import cookieParser from 'cookie-parser'
 import tumblr from "tumblr.js"
+import expressLayouts from "express-ejs-layouts"
 
 // Local dependencies
-import config from "./config/config"
+import AppConfig from "./config/config"
 import tumblrDashboard from "./routes/tumblr-dashboard";
 import tumblrLikes from "./routes/tumblr-likes";
 import tumblrUser from "./routes/tumblr-user"
@@ -53,15 +54,15 @@ async function main() {
         requestTokenURL: 'https://www.tumblr.com/oauth/request_token',
         accessTokenURL: 'https://www.tumblr.com/oauth/access_token',
         userAuthorizationURL: 'https://www.tumblr.com/oauth/authorize',
-        consumerKey: config.consumer_key,
-        consumerSecret: config.consumer_secret,
+        consumerKey: AppConfig.consumer_key,
+        consumerSecret: AppConfig.consumer_secret,
         callbackURL: "http://127.0.0.1:6969/auth/tumblr/callback",
         signatureMethod: "HMAC-SHA1"
     }, async (token, tokenSecret, profile, cb) => {
         const tumblrClient = tumblr.createClient({
             credentials: {
-                consumer_key: config.consumer_key,
-                consumer_secret: config.consumer_secret,
+                consumer_key: AppConfig.consumer_key,
+                consumer_secret: AppConfig.consumer_secret,
                 token: token,
                 token_secret: tokenSecret,
             },
@@ -106,14 +107,17 @@ async function main() {
     });
 
     const app = express()
+    app.use(expressLayouts);
     app.set('view engine', 'ejs');
+    app.use(express.static(__dirname + '/public'));
+
     app.set('views', __dirname + '/views');
     app.set('trust proxy', 1)
     app.use(cookieParser());
     app.set('port', 6969)
     app.use(session({
         store: new FileStore({
-            path: `${config.storage_root}/sessions`
+            path: `${AppConfig.storage_root}/sessions`
         }),
         secret: 'tumblr-secure-secret',
         resave: false,
@@ -126,28 +130,17 @@ async function main() {
 
     app.get('/', async (req, res) => {
         const users = await userStore.all()
-        res.render('pages/index', {
+        res.render('pages/users', {
             users: users
         });
     });
 
-
-    // Per-user routes
-    app.get('/user/:userid/', async (req, res) => {
-        const userId = req.params.userid;
-        const user: any = await userStore.findById(userId);
-
-        if (!user) {
-            res.status(404).send("Couldn't find user");
-            return
-        }
-        res.render('pages/user-dashboard', {
-            user: {
-                id: user.id,
-                name: user.username
-            }
+    app.get('/settings', async (req, res) => {
+        res.render('pages/settings', {
+            appConfig: AppConfig
         });
     });
+
 
     const userRouteErrorHandler = (error, req, res, next) => {
         console.log(error)

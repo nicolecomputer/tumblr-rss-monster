@@ -1,0 +1,28 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">Settings</h1>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% Object.keys(appConfig).forEach(function(key){ %>
+                <tr>
+                    <td>
+                        <%= key %>
+                    </td>
+                    <td>
+                        <code>
+                            <%= appConfig[key] %>
+                        </code>
+                    </td>
+                </tr>
+                <% }); %>
+        </tbody>
+    </table>
+</div>

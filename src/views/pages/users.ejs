@@ -1,0 +1,32 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">Users</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group mr-2">
+            <a href="/auth/tumblr" class="btn btn-outline-primary">Add User</a>
+        </div>
+    </div>
+</div>
+
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th class="flex-grow-1">User</th>
+                <th>Dashboard Feed</th>
+                <th>Likes Feed</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% users.forEach(function(user){ %>
+                <tr>
+                    <td>
+                        <%= user.username %>
+                    </td>
+                    <td><a href="/user/<%= user.id %>/rss/dashboard.rss">Feed</a></td>
+                    <td><a href="/user/<%= user.id %>/rss/likes.rss">Feed</a></td>
+                </tr>
+                <% }); %>
+        </tbody>
+    </table>
+</div>
