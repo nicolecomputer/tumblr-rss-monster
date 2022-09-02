@@ -7,6 +7,13 @@
 Hey! So, you want to read your tumblr feeds in your RSS reader, huh? You want to be able to grab your dashboard or share your liked posts with someone else or maybe follow a couple of blogs? Well this is the project for you.
 
 Tumblr RSS monster is a bridge that connects to Tumblr via their API and generates you RSS feed goodness. Because it uses the API and is authenticated you'll be able to get feeds for private or NSFW blogs that normally require you to be logged in.
+
+## What does it look like?
+
+![Screen of admin page](demo.png)
+
+The hope is that you're not spending too much on admin screens so these pages have been designed to get you in, get you logged into tumblr, and then get the feed urls. The hope is that you won't need to pop in too often.
+
 ## Deploying
 
 This project is deployed as a docker container.
