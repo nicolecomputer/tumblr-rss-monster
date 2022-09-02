@@ -7,7 +7,7 @@ const postCache = cacheManager.caching({
     store: fsStore,
     options: {
         path: `${config.storage_root}/post-cache`,
-        ttl: 60 * 60 * 24,
+        ttl: 60 * 45,
     }
 });
 
