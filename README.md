@@ -26,6 +26,7 @@ This project is deployed as a docker container.
 
 - `TUMBLR_CONSUMER_KEY`: Tumblr consumer key from [creating an application](https://www.tumblr.com/oauth/apps)
 - `TUMBLR_CONSUMER_SECRET`: Tumblr consumer key from [creating an application](https://www.tumblr.com/oauth/apps)
+- `CALLBACK_URL_BASE`: When tumblr finishes logging in where should it return to. This is usually a value like "http://127.0.0.1:6969/" or "https://you-server/"
 - `STORAGE_ROOT`: Optional defaults to /data/
 
 ### Mounts:

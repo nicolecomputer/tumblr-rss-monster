@@ -56,7 +56,7 @@ async function main() {
         userAuthorizationURL: 'https://www.tumblr.com/oauth/authorize',
         consumerKey: AppConfig.consumer_key,
         consumerSecret: AppConfig.consumer_secret,
-        callbackURL: "http://127.0.0.1:6969/auth/tumblr/callback",
+        callbackURL: `${AppConfig.callbackURLBase}/auth/tumblr/callback`,
         signatureMethod: "HMAC-SHA1"
     }, async (token, tokenSecret, profile, cb) => {
         const tumblrClient = tumblr.createClient({
