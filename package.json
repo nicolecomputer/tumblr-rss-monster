@@ -19,7 +19,6 @@
     "express-ejs-layouts": "^2.5.1",
     "express-session": "^1.17.3",
     "lodash.padstart": "^4.6.1",
-    "node-cache": "^5.1.2",
     "passport": "^0.6.0",
     "passport-oauth1": "^1.2.0",
     "rss": "^1.1.1",
