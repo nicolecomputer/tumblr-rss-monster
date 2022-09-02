@@ -56,7 +56,7 @@ async function main() {
         userAuthorizationURL: 'https://www.tumblr.com/oauth/authorize',
         consumerKey: AppConfig.consumer_key,
         consumerSecret: AppConfig.consumer_secret,
-        callbackURL: `${AppConfig.callbackURLBase}/auth/tumblr/callback`,
+        callbackURL: `${AppConfig.baseUrl}/auth/tumblr/callback`,
         signatureMethod: "HMAC-SHA1"
     }, async (token, tokenSecret, profile, cb) => {
         const tumblrClient = tumblr.createClient({
@@ -131,6 +131,7 @@ async function main() {
     app.get('/', async (req, res) => {
         const users = await userStore.all()
         res.render('pages/users', {
+            baseUrl: AppConfig.baseUrl,
             users: users
         });
     });
@@ -178,7 +179,7 @@ async function main() {
     app._router.stack.forEach(function (r) {
         if (r.route && r.route.path) {
             const route = r.route.path;
-            console.log(`${localURL}${route}`)
+            console.log(`${AppConfig.baseUrl}${route.slice(1)}`)
         }
     });
     console.log('============')
