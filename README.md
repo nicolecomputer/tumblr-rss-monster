@@ -22,6 +22,10 @@ This project is deployed as a docker container.
 > docker pull ghcr.io/nicolecomputer/tumblr-rss-monster:main
 ```
 
+### A Note on security
+
+Please don't expose this to the public internet. You want this to run on a local box that only your rss reader can access. There isn't any protection against anyone and everyone using your instance for their account and tumblr has [api limits](https://www.tumblr.com/docs/en/api/v2#rate-limits) that mean you won't be able to enjoy your feeds.
+
 ### Environemnt variables:
 
 - `TUMBLR_CONSUMER_KEY`: Tumblr consumer key from [creating an application](https://www.tumblr.com/oauth/apps)
